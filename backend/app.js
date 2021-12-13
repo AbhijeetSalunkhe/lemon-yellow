@@ -3,9 +3,16 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const dotenv = require('dotenv')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//(start) config
+dotenv.config();
+const config = require('./config/config');
+const database  = require('./config/database');
+//(end) config
+
+const apiV1Router = require('./routes/api.js');
+
 
 var app = express();
 
@@ -19,8 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1/', apiV1Router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -36,6 +42,10 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.listen(config.PORT, function () {
+  console.log(' app listening on port ' + config.PORT)
 });
 
 module.exports = app;
